@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="ar" data-bss-forced-theme="dark" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>التحليلات - DataMap Pro</title>
+    <link rel="canonical" href="https://ai8v.com/analytics.html">
+    <meta property="og:url" content="https://ai8v.com/analytics.html">
+    <meta name="twitter:description" content="DataMap Pro أداة ويب تعمل بالكامل في المتصفح (صفر Backend) لتنظيف ودمج وتحليل وتصدير بيانات خرائط جوجل">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' https: data:; connect-src 'self';">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="DataMap Pro">
+    <meta property="og:image" content="https://ai8v.com/assets/img/DataMap.png">
+    <meta name="description" content="تحليل بيانات خرائط جوجل - DataMap Pro">
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/img/icon-512.png">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cairo:400,600,800&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="assets/css/analytics.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body>    <div class="toast-container" id="toastContainer" role="region" aria-label="الإشعارات" aria-live="polite"></div>
+    <a href="#mainContent" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
+
+    <div class="loading-overlay d-none" id="loadingOverlay" role="status" aria-live="polite" aria-label="جاري تحميل التحليلات">
+        <div class="text-center">
+            <div class="spinner-custom" aria-hidden="true"></div>
+            <p class="loading-text" id="loadingText">جاري تحميل التحليلات...</p>
+            <div class="loading-progress-container d-none" id="progressContainer">
+                <div class="loading-progress-bar">
+                    <div class="loading-progress-fill" id="progressFill"></div>
+                </div>
+                <p class="loading-progress-text" id="progressText"></p>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top" aria-label="التنقل الرئيسي">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="bi bi-database-gear ms-2" aria-hidden="true"></i> DataMap Pro
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="تبديل القائمة">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link" href="import.html"><i class="bi bi-cloud-upload ms-1" aria-hidden="true"></i> الاستيراد</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.html"><i class="bi bi-table ms-1" aria-hidden="true"></i> إدارة البيانات</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="analytics.html" aria-current="page"><i class="bi bi-graph-up ms-1" aria-hidden="true"></i> التحليلات</a></li>
+                        <li class="nav-item"><a class="nav-link" href="export.html"><i class="bi bi-download ms-1" aria-hidden="true"></i> التصدير</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-light text-dark" id="navRecordCount" aria-label="إجمالي السجلات">
+                            <i class="bi bi-archive ms-1" aria-hidden="true"></i>
+                            <span id="navTotalRecords">0</span> سجل
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4" id="mainContent">
+        <h1 class="page-title">
+            <i class="bi bi-graph-up ms-2" aria-hidden="true"></i> التحليلات والإحصائيات
+        </h1>
+        <p class="page-subtitle">تحليل شامل لبيانات خرائط جوجل المستوردة</p>
+
+        <div id="analyticsContent">
+            <section aria-labelledby="analyticsSummaryHeading" class="mb-4">
+                <h2 id="analyticsSummaryHeading" class="visually-hidden">ملخص الإحصائيات</h2>
+                <div class="row g-3">
+                    <div class="col-xl col-lg-4 col-md-4 col-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon blue" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="anTotalRecords">0</p>
+                                    <small class="summary-context d-none" id="anTotalRecordsCtx"></small>
+                                    <p class="summary-label">إجمالي السجلات</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-xl col-lg-4 col-md-4 col-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon green" aria-hidden="true"><i class="bi bi-geo-alt"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="anTotalCities">0</p>
+                                    <small class="summary-context d-none" id="anTotalCitiesCtx"></small>
+                                    <p class="summary-label">المدن</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-xl col-lg-4 col-md-4 col-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon orange" aria-hidden="true"><i class="bi bi-tags"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="anTotalCategories">0</p>
+                                    <small class="summary-context d-none" id="anTotalCategoriesCtx"></small>
+                                    <p class="summary-label">التصنيفات</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-xl col-lg-4 col-md-4 col-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon purple" aria-hidden="true"><i class="bi bi-key"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="anTotalKeywords">0</p>
+                                    <small class="summary-context d-none" id="anTotalKeywordsCtx"></small>
+                                    <p class="summary-label">الكلمات المفتاحية</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-xl col-lg-4 col-md-4 col-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon gold" aria-hidden="true"><i class="bi bi-star-fill"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="anAvgRating">0</p>
+                                    <small class="summary-context d-none" id="anAvgRatingCtx"></small>
+                                    <p class="summary-label">متوسط التقييم</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section aria-labelledby="analyticsFilterHeading" class="filter-section mb-4">
+                <h2 id="analyticsFilterHeading" class="visually-hidden">فلاتر التحليلات</h2>
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <label class="filter-label"><i class="bi bi-key-fill" aria-hidden="true"></i> الكلمة المفتاحية</label>
+                        <div class="filter-actions">
+                            <span class="filter-count" id="keywordFilterCount"></span>
+                            <button type="button" class="filter-action-btn" onclick="analyticsSelectAll('keyword')">الكل</button>
+                            <button type="button" class="filter-action-btn" onclick="analyticsClearAll('keyword')">مسح</button>
+                        </div>
+                    </div>
+                    <div class="filter-chips-wrapper">
+                        <div class="filter-chips-search" id="keywordChipsSearch">
+                            <input type="text" placeholder="بحث في الكلمات المفتاحية..." aria-label="بحث في الكلمات المفتاحية" oninput="filterChipsSearch('keyword', this.value)">
+                        </div>
+                        <div class="filter-chips" id="keywordChips" role="group" aria-label="فلترة حسب الكلمة المفتاحية"></div>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-header">
+                        <label class="filter-label"><i class="bi bi-geo-alt-fill" aria-hidden="true"></i> المدينة</label>
+                        <div class="filter-actions">
+                            <span class="filter-count" id="cityFilterCount"></span>
+                            <button type="button" class="filter-action-btn" onclick="analyticsSelectAll('city')">الكل</button>
+                            <button type="button" class="filter-action-btn" onclick="analyticsClearAll('city')">مسح</button>
+                        </div>
+                    </div>
+                    <div class="filter-chips-wrapper">
+                        <div class="filter-chips-search" id="cityChipsSearch">
+                            <input type="text" placeholder="بحث في المدن..." aria-label="بحث في المدن" oninput="filterChipsSearch('city', this.value)">
+                        </div>
+                        <div class="filter-chips" id="cityChips" role="group" aria-label="فلترة حسب المدينة"></div>
+                    </div>
+                </div>
+                <div class="active-filters-bar" id="activeFiltersBar">
+                    <span class="active-filters-label"><i class="bi bi-funnel-fill" aria-hidden="true"></i> الفلاتر النشطة:</span>
+                    <div id="activeFilterTags"></div>
+                    <button type="button" class="active-filters-clear" onclick="analyticsClearAllFilters()">مسح الكل</button>
+                </div>
+            </section>
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <section aria-labelledby="cityChartHeading" class="chart-card">
+                        <h2 id="cityChartHeading" class="chart-card-title"><i class="bi bi-bar-chart-fill ms-2" aria-hidden="true"></i> توزيع المدن</h2>
+                        <canvas id="cityChart" aria-label="مخطط أعمدة يوضح توزيع السجلات حسب المدن" role="img"></canvas>
+                    </section>
+                </div>
+                <div class="col-lg-6">
+                    <section aria-labelledby="categoryChartHeading" class="chart-card">
+                        <h2 id="categoryChartHeading" class="chart-card-title"><i class="bi bi-pie-chart-fill ms-2" aria-hidden="true"></i> توزيع التصنيفات</h2>
+                        <canvas id="categoryChart" aria-label="مخطط دائري يوضح توزيع التصنيفات" role="img"></canvas>
+                    </section>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <section aria-labelledby="ratingChartHeading" class="chart-card">
+                        <h2 id="ratingChartHeading" class="chart-card-title"><i class="bi bi-star-half ms-2" aria-hidden="true"></i> توزيع التقييمات</h2>
+                        <canvas id="ratingChart" aria-label="مخطط يوضح توزيع التقييمات" role="img"></canvas>
+                    </section>
+                </div>
+                <div class="col-lg-6">
+                    <section aria-labelledby="keywordCompareHeading" class="chart-card">
+                        <h2 id="keywordCompareHeading" class="chart-card-title"><i class="bi bi-intersect ms-2" aria-hidden="true"></i> مقارنة الكلمات المفتاحية</h2>
+                        <div class="table-responsive">
+                            <table class="table analytics-table" id="keywordCompareTable" aria-label="جدول مقارنة الكلمات المفتاحية">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">الكلمة المفتاحية</th>
+                                        <th scope="col">عدد النتائج</th>
+                                        <th scope="col">المدن</th>
+                                        <th scope="col">متوسط التقييم</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="keywordCompareBody"></tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <section aria-labelledby="crossTableHeading" class="chart-card">
+                        <h2 id="crossTableHeading" class="chart-card-title"><i class="bi bi-table ms-2" aria-hidden="true"></i> توزيع التصنيفات حسب المدن</h2>
+                        <div class="table-responsive">
+                            <table class="table analytics-table" id="crossTable" aria-label="جدول توزيع التصنيفات حسب المدن">
+                                <thead id="crossTableHeader"></thead>
+                                <tbody id="crossTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div class="empty-state d-none" id="crossTableEmpty">
+                            <i class="bi bi-inbox" aria-hidden="true"></i>
+                            <p>لا توجد بيانات للتحليل</p>
+                        </div>
+                    </section>
+                </div>
+                <div class="col-lg-4">
+                    <section aria-labelledby="insightsHeading" class="chart-card">
+                        <h2 id="insightsHeading" class="chart-card-title"><i class="bi bi-lightbulb-fill ms-2" aria-hidden="true"></i> استنتاجات سريعة</h2>
+                        <div id="insightsContainer" role="list" aria-label="قائمة الاستنتاجات"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state-page d-none" id="analyticsEmpty">
+            <i class="bi bi-graph-up" aria-hidden="true"></i>
+            <h3>لا توجد بيانات للتحليل</h3>
+            <p>قم باستيراد بيانات أولاً من صفحة الاستيراد</p>
+            <a href="import.html" class="btn btn-primary mt-3">
+                <i class="bi bi-cloud-upload ms-1" aria-hidden="true"></i> استيراد بيانات
+            </a>
+        </div>
+    </main>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/sw-register.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/db.js"></script>
+    <script src="assets/js/chart.umd.min.js"></script>
+    <script src="assets/js/analytics.js"></script>
+</body>
+
+</html>

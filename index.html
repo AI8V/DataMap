@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="ar" data-bss-forced-theme="dark" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>إدارة البيانات - DataMap Pro</title>
+    <link rel="canonical" href="https://ai8v.com/">
+    <meta property="og:url" content="https://ai8v.com/">
+    <meta name="twitter:description" content="DataMap Pro أداة ويب تعمل بالكامل في المتصفح (صفر Backend) لتنظيف ودمج وتحليل وتصدير بيانات خرائط جوجل">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' https: data:; connect-src 'self';">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="DataMap Pro">
+    <meta property="og:image" content="https://ai8v.com/assets/img/DataMap.png">
+    <meta name="description" content="عرض وإدارة بيانات خرائط جوجل المستخرجة - DataMap Pro">
+    <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "WebSite",
+            "name": "DataMap Pro",
+            "url": "https://ai8v.com"
+        }
+    </script>
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/img/icon-512.png">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cairo:400,600,800&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+</head>
+
+<body>    <a href="#mainContent" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
+
+<div class="loading-overlay d-none" id="loadingOverlay" role="status" aria-live="polite" aria-label="جاري تحميل البيانات">
+    <div class="text-center">
+        <div class="spinner-custom" aria-hidden="true"></div>
+        <p class="loading-text" id="loadingText">جاري تحميل البيانات...</p>
+        <div class="loading-progress-container d-none" id="progressContainer">
+            <div class="loading-progress-bar">
+                <div class="loading-progress-fill" id="progressFill"></div>
+            </div>
+            <p class="loading-progress-text" id="progressText"></p>
+        </div>
+    </div>
+</div>
+
+    <div class="toast-container" id="toastContainer" role="region" aria-label="الإشعارات" aria-live="polite"></div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top" aria-label="التنقل الرئيسي">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="bi bi-database-gear ms-2" aria-hidden="true"></i>
+                    DataMap Pro
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="تبديل القائمة">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="import.html">
+                                <i class="bi bi-cloud-upload ms-1" aria-hidden="true"></i>
+                                الاستيراد
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html" aria-current="page">
+                                <i class="bi bi-table ms-1" aria-hidden="true"></i>
+                                إدارة البيانات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="analytics.html">
+                                <i class="bi bi-graph-up ms-1" aria-hidden="true"></i>
+                                التحليلات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="export.html">
+                                <i class="bi bi-download ms-1" aria-hidden="true"></i>
+                                التصدير
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-light text-dark" id="navRecordCount" aria-label="إجمالي السجلات">
+                            <i class="bi bi-archive ms-1" aria-hidden="true"></i>
+                            <span id="navTotalRecords">0</span> سجل
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4" id="mainContent">
+        <h1 class="visually-hidden">إدارة البيانات</h1>
+
+        <div class="empty-state-page d-none" id="pageEmptyState">
+            <i class="bi bi-database" aria-hidden="true"></i>
+            <span class="h3">لا توجد بيانات بعد</span>
+            <p>ابدأ باستيراد بيانات من خرائط جوجل لعرضها وإدارتها هنا</p>
+            <a href="import.html" class="btn btn-primary mt-3">
+                <i class="bi bi-cloud-upload ms-1" aria-hidden="true"></i>
+                استيراد بيانات
+            </a>
+        </div>
+
+        <div id="mainPageContent">
+            <section aria-labelledby="statsHeading" class="mb-4">
+                <h2 id="statsHeading" class="visually-hidden">إحصائيات النظام</h2>
+                <div class="row g-3" id="statsContainer">
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon blue" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
+                            <p class="stat-value" id="totalRecords" aria-live="polite">0</p>
+                            <p class="stat-label">إجمالي السجلات</p>
+                        </article>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon green" aria-hidden="true"><i class="bi bi-geo-alt"></i></div>
+                            <p class="stat-value" id="totalCities" aria-live="polite">0</p>
+                            <p class="stat-label">المدن</p>
+                        </article>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon orange" aria-hidden="true"><i class="bi bi-tags"></i></div>
+                            <p class="stat-value" id="totalCategories" aria-live="polite">0</p>
+                            <p class="stat-label">التصنيفات</p>
+                        </article>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon purple" aria-hidden="true"><i class="bi bi-key"></i></div>
+                            <p class="stat-value" id="totalKeywords" aria-live="polite">0</p>
+                            <p class="stat-label">الكلمات المفتاحية</p>
+                        </article>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon gold" aria-hidden="true"><i class="bi bi-star-fill"></i></div>
+                            <p class="stat-value" id="avgRating" aria-live="polite">0</p>
+                            <p class="stat-label">متوسط التقييم</p>
+                        </article>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-4 col-6">
+                        <article class="stat-card">
+                            <div class="stat-icon teal" aria-hidden="true"><i class="bi bi-chat-dots-fill"></i></div>
+                            <p class="stat-value" id="totalReviews" aria-live="polite">0</p>
+                            <p class="stat-label">المراجعات</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section aria-labelledby="searchHeading" class="search-section">
+                <h2 id="searchHeading" class="visually-hidden">البحث والفلترة</h2>
+                <form class="row g-3 align-items-end" onsubmit="return false;" role="search">
+                    <div class="col-lg-3 col-md-6">
+                        <label class="form-label fw-bold" for="searchInput">
+                            <i class="bi bi-search ms-1" aria-hidden="true"></i> البحث
+                        </label>
+                        <input type="search" class="form-control" id="searchInput" placeholder="ابحث عن اسم، عنوان، هاتف..." onkeyup="handleSearch()" autocomplete="off">
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-geo-alt ms-1" aria-hidden="true"></i> المدينة
+                        </label>
+                        <div class="multi-select-wrapper" id="cityFilterWrapper" data-filter-key="city">
+                            <button type="button" class="multi-select-toggle" id="cityFilterToggle" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="toggle-text">جميع المدن</span>
+                                <span class="toggle-badge d-none">0</span>
+                                <i class="bi bi-chevron-down toggle-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div class="multi-select-dropdown" id="cityFilterDropdown" role="listbox" aria-label="اختيار المدن">
+                                <div class="multi-select-search">
+                                    <input type="text" placeholder="بحث في المدن..." aria-label="بحث في المدن">
+                                </div>
+                                <div class="multi-select-options" id="cityFilterOptions"></div>
+                                <div class="multi-select-actions">
+                                    <button type="button" onclick="multiSelectAll('city')">تحديد الكل</button>
+                                    <button type="button" onclick="multiClearAll('city')">إلغاء الكل</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-tags ms-1" aria-hidden="true"></i> التصنيف
+                        </label>
+                        <div class="multi-select-wrapper" id="categoryFilterWrapper" data-filter-key="category">
+                            <button type="button" class="multi-select-toggle" id="categoryFilterToggle" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="toggle-text">جميع التصنيفات</span>
+                                <span class="toggle-badge d-none">0</span>
+                                <i class="bi bi-chevron-down toggle-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div class="multi-select-dropdown" id="categoryFilterDropdown" role="listbox" aria-label="اختيار التصنيفات">
+                                <div class="multi-select-search">
+                                    <input type="text" placeholder="بحث في التصنيفات..." aria-label="بحث في التصنيفات">
+                                </div>
+                                <div class="multi-select-options" id="categoryFilterOptions"></div>
+                                <div class="multi-select-actions">
+                                    <button type="button" onclick="multiSelectAll('category')">تحديد الكل</button>
+                                    <button type="button" onclick="multiClearAll('category')">إلغاء الكل</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-key ms-1" aria-hidden="true"></i> الكلمة المفتاحية
+                        </label>
+                        <div class="multi-select-wrapper" id="keywordFilterWrapper" data-filter-key="keyword">
+                            <button type="button" class="multi-select-toggle" id="keywordFilterToggle" aria-haspopup="listbox" aria-expanded="false">
+                                <span class="toggle-text">جميع الكلمات</span>
+                                <span class="toggle-badge d-none">0</span>
+                                <i class="bi bi-chevron-down toggle-arrow" aria-hidden="true"></i>
+                            </button>
+                            <div class="multi-select-dropdown" id="keywordFilterDropdown" role="listbox" aria-label="اختيار الكلمات المفتاحية">
+                                <div class="multi-select-search">
+                                    <input type="text" placeholder="بحث في الكلمات..." aria-label="بحث في الكلمات المفتاحية">
+                                </div>
+                                <div class="multi-select-options" id="keywordFilterOptions"></div>
+                                <div class="multi-select-actions">
+                                    <button type="button" onclick="multiSelectAll('keyword')">تحديد الكل</button>
+                                    <button type="button" onclick="multiClearAll('keyword')">إلغاء الكل</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 col-md-6">
+                        <label class="form-label fw-bold" for="sortBy">
+                            <i class="bi bi-sort-down ms-1" aria-hidden="true"></i> ترتيب
+                        </label>
+                        <select class="form-select" id="sortBy" onchange="handleSort()">
+                            <option value="name">الاسم</option>
+                            <option value="rating">التقييم</option>
+                            <option value="reviews">المراجعات</option>
+                            <option value="city">المدينة</option>
+                            <option value="keyword">الكلمة المفتاحية</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <button class="btn btn-outline-secondary w-100" type="button" onclick="resetFilters()">
+                            <i class="bi bi-x-circle ms-1" aria-hidden="true"></i> إعادة تعيين
+                        </button>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label fw-bold" for="filterPhone">
+                            <i class="bi bi-telephone ms-1" aria-hidden="true"></i> الهاتف
+                        </label>
+                        <select class="form-select" id="filterPhone" onchange="handleAdvancedFilter()">
+                            <option value="">الكل</option>
+                            <option value="yes">يوجد رقم</option>
+                            <option value="no">بدون رقم</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label fw-bold" for="filterWebsite">
+                            <i class="bi bi-globe ms-1" aria-hidden="true"></i> الموقع الإلكتروني
+                        </label>
+                        <select class="form-select" id="filterWebsite" onchange="handleAdvancedFilter()">
+                            <option value="">الكل</option>
+                            <option value="yes">يوجد موقع</option>
+                            <option value="no">بدون موقع</option>
+                        </select>
+                        <small class="text-muted d-none mt-1" id="websiteFilterNote" style="font-size: 0.75rem; line-height: 1.3; display: block;">
+                            <i class="bi bi-info-circle ms-1" aria-hidden="true"></i>
+                            عدم وجود موقع في البيانات لا يعني عدم وجوده فعلياً — يُنصح بالبحث عن اسم النشاط في جوجل
+                        </small>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label fw-bold" for="filterReviews">
+                            <i class="bi bi-chat-dots ms-1" aria-hidden="true"></i> المراجعات
+                        </label>
+                        <select class="form-select" id="filterReviews" onchange="handleAdvancedFilter()">
+                            <option value="">الكل</option>
+                            <option value="0">بدون مراجعات</option>
+                            <option value="lt10">أقل من 10</option>
+                            <option value="gte10">10 فأكثر</option>
+                            <option value="gte50">50 فأكثر</option>
+                        </select>
+                    </div>
+                </form>
+            </section>
+
+            <section aria-labelledby="tableHeading" class="table-section">
+                <h2 id="tableHeading" class="visually-hidden">جدول البيانات</h2>
+                <div class="table-actions-bar">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="text-muted" id="filteredCount">0 نتيجة</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-danger btn-sm d-none" id="btnDeleteSelected" onclick="deleteSelected()">
+                            <i class="bi bi-trash3 ms-1" aria-hidden="true"></i> حذف المحدد
+                        </button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div class="table-loading-indicator d-none" id="tableLoadingIndicator">
+                        <div class="table-loading-spinner" aria-hidden="true"></div>
+                        <span>جاري التحميل...</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="dataTable" aria-describedby="tableHeading">
+                            <thead>
+                                <tr>
+                                    <th scope="col" style="width: 40px;">
+                                        <input type="checkbox" class="form-check-input" id="selectAll" aria-label="تحديد الكل" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th scope="col">#</th>
+                                    <th scope="col">الاسم</th>
+                                    <th scope="col">المدينة</th>
+                                    <th scope="col">الهاتف</th>
+                                    <th scope="col">التصنيف</th>
+                                    <th scope="col">التقييم</th>
+                                    <th scope="col">المراجعات</th>
+                                    <th scope="col">الكلمة المفتاحية</th>
+                                    <th scope="col">الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="empty-state d-none" id="emptyState" role="status">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <h3>لا توجد نتائج</h3>
+                        <p>لم يتم العثور على سجلات مطابقة لمعايير البحث أو الفلترة الحالية.</p>
+                        <button class="btn btn-outline-primary mt-3" onclick="resetFilters()">
+                            <i class="bi bi-x-circle ms-1" aria-hidden="true"></i> إعادة تعيين الفلاتر
+                        </button>
+                    </div>
+                </div>
+                <nav class="mt-4" id="paginationContainer" aria-label="تصفح الصفحات">
+                    <ul class="pagination justify-content-center" id="pagination"></ul>
+                </nav>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="viewModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="viewModalTitle">
+                        <i class="bi bi-eye-fill ms-1" aria-hidden="true"></i> تفاصيل السجل
+                    </h2>
+                    <button type="button" class="btn-close order-first" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body" id="viewModalBody"></div>
+                <div class="modal-footer">
+                    <a href="#" class="btn btn-info" id="btnOpenMap" target="_blank" rel="noopener">
+                        <i class="bi bi-map ms-1" aria-hidden="true"></i> فتح في خرائط جوجل
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="editModalTitle">
+                        <i class="bi bi-pencil-fill ms-1" aria-hidden="true"></i> تعديل السجل
+                    </h2>
+                    <button type="button" class="btn-close order-first" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm" novalidate>
+                        <input type="hidden" id="editRecordId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="editName">الاسم</label>
+                                <input type="text" class="form-control" id="editName">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="editCategory">التصنيف</label>
+                                <input type="text" class="form-control" id="editCategory">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="editAddress">العنوان</label>
+                                <input type="text" class="form-control" id="editAddress">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="editCity">المدينة</label>
+                                <input type="text" class="form-control" id="editCity">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="editPhone">الهاتف</label>
+                                <input type="tel" class="form-control" id="editPhone" dir="ltr">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="editWebsite">الموقع الإلكتروني</label>
+                                <input type="url" class="form-control" id="editWebsite" dir="ltr">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="editRating">التقييم</label>
+                                <input type="number" class="form-control" id="editRating" min="0" max="5" step="0.1">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label" for="editReviews">المراجعات</label>
+                                <input type="number" class="form-control" id="editReviews" min="0">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="editKeyword">الكلمة المفتاحية</label>
+                                <input type="text" class="form-control" id="editKeyword">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="saveEdit()">
+                        <i class="bi bi-check-circle ms-1" aria-hidden="true"></i> حفظ التعديلات
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h2 class="modal-title h5" id="deleteModalTitle">
+                        <i class="bi bi-exclamation-triangle-fill ms-1" aria-hidden="true"></i> تأكيد الحذف
+                    </h2>
+                    <button type="button" class="btn-close btn-close-white order-first" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-trash3 text-danger" style="font-size: 4rem;" aria-hidden="true"></i>
+                    <h3 class="mt-3 h5" id="deleteMessage">هل أنت متأكد من حذف هذا السجل؟</h3>
+                    <p class="text-muted">لا يمكن التراجع عن هذا الإجراء</p>
+                    <input type="hidden" id="deleteRecordId">
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger px-4" onclick="confirmDelete()">
+                        <i class="bi bi-trash3 ms-1" aria-hidden="true"></i> حذف
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="bulkDeleteModal" tabindex="-1" aria-labelledby="bulkDeleteModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h2 class="modal-title h5" id="bulkDeleteModalTitle">
+                        <i class="bi bi-exclamation-triangle-fill ms-1" aria-hidden="true"></i> تأكيد حذف السجلات المحددة
+                    </h2>
+                    <button type="button" class="btn-close btn-close-white order-first" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <i class="bi bi-trash3 text-danger" style="font-size: 4rem;" aria-hidden="true"></i>
+                    <h3 class="mt-3 h5">هل أنت متأكد من حذف السجلات المحددة؟</h3>
+                    <p class="text-muted">سيتم حذف <strong id="bulkDeleteCount">0</strong> سجل نهائياً</p>
+                    <p class="text-danger fw-bold">لا يمكن التراجع عن هذا الإجراء!</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger px-4" id="btnConfirmBulkDelete">
+                        <i class="bi bi-trash3 ms-1" aria-hidden="true"></i> حذف الكل
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/sw-register.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/db.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html data-bs-theme="dark" lang="ar" data-bss-forced-theme="dark" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>استيراد البيانات - DataMap Pro</title>
+    <link rel="canonical" href="https://ai8v.com/import.html">
+    <meta property="og:url" content="https://ai8v.com/import.html">
+    <meta name="twitter:description" content="DataMap Pro أداة ويب تعمل بالكامل في المتصفح (صفر Backend) لتنظيف ودمج وتحليل وتصدير بيانات خرائط جوجل">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; img-src 'self' https: data:; connect-src 'self';">
+    <meta name="theme-color" content="#0f172a">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="DataMap Pro">
+    <meta property="og:image" content="https://ai8v.com/assets/img/DataMap.png">
+    <meta name="description" content="استيراد وتنظيف بيانات خرائط جوجل - DataMap Pro">
+    <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/fav16D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/fav32D.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" sizes="180x180" href="assets/img/fav180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/img/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/img/icon-512.png">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cairo:400,600,800&amp;display=swap">
+    <link rel="stylesheet" href="assets/css/common.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="assets/css/import.css">
+</head>
+
+<body>    <a href="#mainContent" class="skip-link">تخطي إلى المحتوى الرئيسي</a>
+
+    <div class="loading-overlay d-none" id="loadingOverlay" role="status" aria-live="polite" aria-label="جاري معالجة البيانات">
+        <div class="text-center">
+            <div class="spinner-custom" aria-hidden="true"></div>
+            <p class="loading-text" id="loadingText">جاري معالجة البيانات...</p>
+            <div class="loading-progress-container d-none" id="progressContainer">
+                <div class="loading-progress-bar">
+                    <div class="loading-progress-fill" id="progressFill"></div>
+                </div>
+                <p class="loading-progress-text" id="progressText"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer" role="region" aria-label="الإشعارات" aria-live="polite"></div>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark sticky-top" aria-label="التنقل الرئيسي">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <i class="bi bi-database-gear ms-2" aria-hidden="true"></i>
+                    DataMap Pro
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="تبديل القائمة">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="import.html" aria-current="page">
+                                <i class="bi bi-cloud-upload ms-1" aria-hidden="true"></i> الاستيراد
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">
+                                <i class="bi bi-table ms-1" aria-hidden="true"></i> إدارة البيانات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="analytics.html">
+                                <i class="bi bi-graph-up ms-1" aria-hidden="true"></i> التحليلات
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="export.html">
+                                <i class="bi bi-download ms-1" aria-hidden="true"></i> التصدير
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-light text-dark" id="navRecordCount" aria-label="إجمالي السجلات">
+                            <i class="bi bi-archive ms-1" aria-hidden="true"></i>
+                            <span id="navTotalRecords">0</span> سجل
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4" id="mainContent">
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-2">
+    <div>
+        <h1 class="page-title">
+            <i class="bi bi-cloud-upload ms-2" aria-hidden="true"></i> استيراد وتنظيف البيانات
+        </h1>
+        <p class="page-subtitle mb-0">ارفع ملف Excel المستخرج من خرائط جوجل وسيتم تنظيفه ودمجه تلقائياً</p>
+    </div>
+    <button class="btn btn-prompt-builder" type="button" data-bs-toggle="modal" data-bs-target="#promptBuilderModal">
+        <i class="bi bi-stars ms-2" aria-hidden="true"></i> مولّد خطة البحث
+    </button>
+</div>
+
+        <section aria-labelledby="uploadHeading" class="step-section" id="stepUpload">
+            <div class="step-header">
+                <span class="step-number">1</span>
+                <h2 id="uploadHeading" class="step-title">رفع الملف</h2>
+            </div>
+            <div class="step-content">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="countrySelect">
+                            <i class="bi bi-globe-americas ms-1" aria-hidden="true"></i>
+                            الدولة <span class="text-danger" aria-label="مطلوب">*</span>
+                        </label>
+                        <select class="form-select" id="countrySelect" required aria-required="true">
+                            <option value="">-- اختر الدولة --</option>
+                            <option value="SA">السعودية</option>
+                            <option value="EG">مصر</option>
+                            <option value="AE">الإمارات</option>
+                            <option value="KW">الكويت</option>
+                            <option value="BH">البحرين</option>
+                            <option value="OM">عُمان</option>
+                            <option value="QA">قطر</option>
+                            <option value="JO">الأردن</option>
+                            <option value="IQ">العراق</option>
+                            <option value="MA">المغرب</option>
+                            <option value="TN">تونس</option>
+                            <option value="LY">ليبيا</option>
+                            <option value="DZ">الجزائر</option>
+                            <option value="TR">تركيا</option>
+                            <option value="OTHER">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold" for="keywordInput">
+                            <i class="bi bi-key ms-1" aria-hidden="true"></i>
+                            الكلمة المفتاحية المستخدمة في البحث <span class="text-danger" aria-label="مطلوب">*</span>
+                        </label>
+                        <input type="text" class="form-control" id="keywordInput" placeholder="مثال: Marketing agency Riyadh" required aria-required="true">
+                    </div>
+                </div>
+                <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="اضغط أو اسحب ملف Excel هنا لرفعه">
+                    <div class="drop-zone-content">
+                        <i class="bi bi-file-earmark-excel drop-zone-icon" aria-hidden="true"></i>
+                        <h3 class="drop-zone-title">اسحب ملف Excel هنا</h3>
+                        <p class="drop-zone-text">أو اضغط لاختيار الملف</p>
+                        <p class="drop-zone-formats">الصيغ المدعومة: .xlsx, .xls, .csv</p>
+                    </div>
+                    <input type="file" id="fileInput" class="d-none" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv">
+                </div>
+                <div class="file-info d-none" id="fileInfo">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-file-earmark-check text-success fs-3 ms-3" aria-hidden="true"></i>
+                            <div>
+                                <p class="file-name mb-0" id="fileName"></p>
+                                <small class="file-size text-muted" id="fileSize"></small>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-danger btn-sm" onclick="removeFile()" aria-label="إزالة الملف">
+                            <i class="bi bi-x-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg px-5" id="btnProcess" onclick="processFile()" disabled>
+                        <i class="bi bi-gear ms-2" aria-hidden="true"></i> معالجة الملف
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="summaryHeading" class="step-section d-none" id="stepSummary">
+            <div class="step-header">
+                <span class="step-number">2</span>
+                <h2 id="summaryHeading" class="step-title">ملخص الاستيراد</h2>
+            </div>
+            <div class="step-content">
+                <div class="row g-3" id="summaryCards">
+                    <div class="col-lg-3 col-md-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon blue" aria-hidden="true"><i class="bi bi-file-earmark-text"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="summaryTotal">0</p>
+                                    <p class="summary-label">إجمالي السجلات</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon green" aria-hidden="true"><i class="bi bi-plus-circle"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="summaryNew">0</p>
+                                    <p class="summary-label">سجلات جديدة</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon orange" aria-hidden="true"><i class="bi bi-copy"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="summaryDuplicates">0</p>
+                                    <p class="summary-label">سجلات مكررة</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <article class="summary-card">
+                            <div class="d-flex align-items-center">
+                                <div class="summary-icon purple" aria-hidden="true"><i class="bi bi-tags"></i></div>
+                                <div class="me-3">
+                                    <p class="summary-value" id="summaryCategories">0</p>
+                                    <p class="summary-label">تصنيفات مختلفة</p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="duplicatesHeading" class="step-section d-none" id="stepDuplicates">
+            <div class="step-header">
+                <span class="step-number">3</span>
+                <h2 id="duplicatesHeading" class="step-title">
+                    السجلات المكررة
+                    <span class="badge bg-warning text-dark ms-2" id="duplicatesBadge">0</span>
+                </h2>
+            </div>
+            <div class="step-content">
+                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill ms-3 fs-4" aria-hidden="true"></i>
+                    <div>تم اكتشاف سجلات مكررة موجودة مسبقاً في قاعدة البيانات. اختر كيف تريد التعامل معها.</div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="خيارات التعامل مع المكررات">
+                    <button class="btn btn-outline-danger" id="btnSkipAll" onclick="handleDuplicates('skip')">
+                        <i class="bi bi-skip-forward ms-1" aria-hidden="true"></i> تخطي كل المكررات
+                    </button>
+                    <button class="btn btn-outline-warning" id="btnAddAll" onclick="handleDuplicates('addMarked')">
+                        <i class="bi bi-plus-circle ms-1" aria-hidden="true"></i> إضافة الكل مع علامة مكرر
+                    </button>
+                    <button class="btn btn-outline-primary active" id="btnManual" onclick="handleDuplicates('manual')">
+                        <i class="bi bi-hand-index ms-1" aria-hidden="true"></i> اختيار يدوي
+                    </button>
+                </div>
+                <div id="duplicatesTableWrapper">
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle ms-1" aria-hidden="true"></i> اضغط على السجل لتحديده أو إلغاء تحديده
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="duplicatesTable" aria-label="جدول السجلات المكررة">
+                            <thead>
+                                <tr>
+                                    <th scope="col">الاسم</th>
+                                    <th scope="col">المدينة</th>
+                                    <th scope="col">الهاتف</th>
+                                    <th scope="col">التصنيف</th>
+                                    <th scope="col">مكرر مع</th>
+                                    <th scope="col" style="width: 60px;">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody id="duplicatesBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="categoriesHeading" class="step-section d-none" id="stepCategories">
+            <div class="step-header">
+                <span class="step-number" id="categoriesStepNum">4</span>
+                <h2 id="categoriesHeading" class="step-title">مراجعة التصنيفات</h2>
+            </div>
+            <div class="step-content">
+                <p class="text-muted mb-3">راجع التصنيفات الموجودة في الملف واحتفظ بالمناسب منها. التصنيفات غير المرتبطة بهدف البحث يمكنك استبعادها.</p>
+                <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="إجراءات التصنيفات">
+                    <button class="btn btn-outline-success btn-sm" onclick="selectAllCategories(true)">
+                        <i class="bi bi-check-all ms-1" aria-hidden="true"></i> احتفاظ بالكل
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="invertCategorySelection()">
+                        <i class="bi bi-arrow-repeat ms-1" aria-hidden="true"></i> عكس الاختيار
+                    </button>
+                </div>
+                <div class="categories-grid" id="categoriesGrid" role="group" aria-label="التصنيفات المتاحة للمراجعة"></div>
+                <div class="alert alert-warning d-flex align-items-center mt-3 d-none" id="categoryExclusionWarning" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill ms-3 fs-4" aria-hidden="true"></i>
+                    <div>
+                        <strong>تنبيه:</strong> تم استبعاد عدد كبير من السجلات.
+                        سيتم إضافة <strong id="categoryWarningCount">0</strong> سجل فقط من أصل <strong id="categoryWarningTotal">0</strong>
+                        (<strong id="categoryWarningPercent">0</strong>%).
+                    </div>
+                </div>
+                <div class="prompt2-section mt-4" id="prompt2Section">
+    <div class="prompt2-header">
+        <div>
+            <h4 class="prompt2-title">
+                <i class="bi bi-robot ms-2" aria-hidden="true"></i> مساعد تحليل التصنيفات بالذكاء الاصطناعي
+            </h4>
+            <p class="prompt2-desc">احصل على توصية ذكية لأي التصنيفات تُبقيها وأيها تستبعدها بناءً على تخصصك</p>
+        </div>
+        <button class="btn btn-prompt-generate btn-sm" type="button" id="btnGeneratePrompt2" onclick="generateCategoryAnalysisPrompt()">
+            <i class="bi bi-magic ms-2" aria-hidden="true"></i> توليد Prompt التحليل
+        </button>
+    </div>
+
+    <div class="prompt-output-wrapper d-none mt-3" id="prompt2OutputWrapper">
+        <div class="prompt-output-header">
+            <span class="prompt-output-label"><i class="bi bi-file-text ms-1" aria-hidden="true"></i> Prompt تحليل التصنيفات</span>
+            <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-outline-light" type="button" onclick="togglePromptPreview('prompt2')">
+                    <i class="bi bi-eye ms-1" aria-hidden="true" id="prompt2ToggleIcon"></i>
+                    <span id="prompt2ToggleText">إظهار</span>
+                </button>
+                <button class="btn btn-sm btn-prompt-copy" type="button" onclick="copyPromptToClipboard('prompt2')">
+                    <i class="bi bi-clipboard ms-1" aria-hidden="true"></i> نسخ
+                </button>
+            </div>
+        </div>
+        <div class="prompt-output-body d-none" id="prompt2Preview">
+            <pre class="prompt-output-text" id="prompt2Text"></pre>
+        </div>
+        <div class="prompt-copy-success d-none" id="prompt2CopySuccess">
+            <i class="bi bi-check-circle-fill ms-1" aria-hidden="true"></i> تم النسخ بنجاح
+        </div>
+    </div>
+</div>
+            </div>
+        </section>
+
+        <section aria-labelledby="citiesHeading" class="step-section d-none" id="stepCities">
+            <div class="step-header">
+                <span class="step-number" id="citiesStepNum">5</span>
+                <h2 id="citiesHeading" class="step-title">المدن المكتشفة</h2>
+            </div>
+            <div class="step-content">
+                <div class="cities-summary" id="citiesSummary" role="list" aria-label="ملخص المدن المكتشفة"></div>
+                <div class="alert alert-info d-none mt-3" id="unknownCitiesAlert" role="alert">
+                    <i class="bi bi-info-circle-fill ms-2" aria-hidden="true"></i>
+                    <span id="unknownCitiesCount">0</span> سجل لم يتم تحديد مدينته. يمكنك تعديلها لاحقاً من صفحة إدارة البيانات.
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="confirmHeading" class="step-section d-none" id="stepConfirm">
+            <div class="step-header">
+                <span class="step-number" id="confirmStepNum">6</span>
+                <h2 id="confirmHeading" class="step-title">التأكيد النهائي</h2>
+            </div>
+            <div class="step-content">
+                <div class="confirm-box">
+                    <div class="confirm-summary">
+                        <div class="confirm-item">
+                            <i class="bi bi-plus-circle-fill text-success" aria-hidden="true"></i>
+                            <span>سيتم إضافة <strong id="confirmNewCount">0</strong> سجل جديد</span>
+                        </div>
+                        <div class="confirm-item">
+                            <i class="bi bi-geo-alt-fill text-info" aria-hidden="true"></i>
+                            <span>في <strong id="confirmCityCount">0</strong> مدينة</span>
+                        </div>
+                        <div class="confirm-item">
+                            <i class="bi bi-tags-fill text-purple" aria-hidden="true"></i>
+                            <span>ضمن <strong id="confirmCategoryCount">0</strong> تصنيف</span>
+                        </div>
+                        <div class="confirm-item">
+                            <i class="bi bi-key-fill text-warning" aria-hidden="true"></i>
+                            <span>بكلمة مفتاحية: <strong id="confirmKeyword"></strong></span>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-success btn-lg px-5" id="btnConfirmImport" onclick="confirmImport()">
+                            <i class="bi bi-check-circle ms-2" aria-hidden="true"></i> إضافة السجلات النظيفة إلى قاعدة البيانات
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section aria-labelledby="historyHeading" class="step-section mt-5">
+            <div class="step-header">
+                <i class="bi bi-clock-history fs-4" aria-hidden="true"></i>
+                <h2 id="historyHeading" class="step-title">سجل الاستيرادات السابقة</h2>
+            </div>
+            <div class="step-content">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="historyTable" aria-label="سجل الاستيرادات السابقة">
+                        <thead>
+                            <tr>
+                                <th scope="col">التاريخ</th>
+                                <th scope="col">الكلمة المفتاحية</th>
+                                <th scope="col">الدولة</th>
+                                <th scope="col">السجلات المضافة</th>
+                                <th scope="col">المكررات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+                <div class="empty-state d-none" id="historyEmpty">
+                    <i class="bi bi-inbox" aria-hidden="true"></i>
+                    <h3>لا توجد استيرادات سابقة</h3>
+                    <p>ابدأ برفع أول ملف Excel</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div class="modal fade" id="promptBuilderModal" tabindex="-1" aria-labelledby="promptBuilderModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-prompt-builder">
+                <h2 class="modal-title h5" id="promptBuilderModalTitle">
+                    <i class="bi bi-stars ms-1" aria-hidden="true"></i> مولّد خطة البحث
+                </h2>
+                <button type="button" class="btn-close btn-close-white order-first" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-3">أدخل وصف نشاطك والجمهور المستهدف والدولة، وسيتم توليد Prompt جاهز تنسخه لأي نموذج ذكاء اصطناعي (ChatGPT, Gemini, Claude…) للحصول على خطة بحث كاملة بالكلمات المفتاحية.</p>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="promptBusinessDesc">
+                        <i class="bi bi-briefcase ms-1" aria-hidden="true"></i>
+                        وصف النشاط أو المشروع <span class="text-danger" aria-label="مطلوب">*</span>
+                    </label>
+                    <textarea class="form-control" id="promptBusinessDesc" rows="3" placeholder="مثال: منصة صحية رقمية لمرضى السكر والضغط والسمنة — أو: شركة توريد مواد غذائية للمطاعم" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="promptTargetAudience">
+                        <i class="bi bi-people ms-1" aria-hidden="true"></i>
+                        الجمهور المستهدف <span class="text-danger" aria-label="مطلوب">*</span>
+                    </label>
+                    <textarea class="form-control" id="promptTargetAudience" rows="2" placeholder="مثال: أطباء، عيادات، مستشفيات، صيدليات — أو: مطاعم، كافيهات، فنادق" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold" for="promptCountrySelect">
+                        <i class="bi bi-globe-americas ms-1" aria-hidden="true"></i>
+                        الدولة <span class="text-danger" aria-label="مطلوب">*</span>
+                    </label>
+                    <select class="form-select" id="promptCountrySelect" required>
+                        <option value="">-- اختر الدولة --</option>
+                        <option value="SA">السعودية</option>
+                        <option value="EG">مصر</option>
+                        <option value="AE">الإمارات</option>
+                        <option value="KW">الكويت</option>
+                        <option value="BH">البحرين</option>
+                        <option value="OM">عُمان</option>
+                        <option value="QA">قطر</option>
+                        <option value="JO">الأردن</option>
+                        <option value="IQ">العراق</option>
+                        <option value="MA">المغرب</option>
+                        <option value="TN">تونس</option>
+                        <option value="LY">ليبيا</option>
+                        <option value="DZ">الجزائر</option>
+                        <option value="TR">تركيا</option>
+                    </select>
+                </div>
+
+                <div class="text-center">
+                    <button class="btn btn-prompt-generate btn-lg px-5" id="btnGeneratePrompt1" type="button" onclick="generateSearchPlanPrompt()" disabled>
+                        <i class="bi bi-magic ms-2" aria-hidden="true"></i> توليد الـ Prompt
+                    </button>
+                </div>
+
+                <div class="prompt-output-wrapper d-none mt-4" id="prompt1OutputWrapper">
+                    <div class="prompt-output-header">
+                        <span class="prompt-output-label"><i class="bi bi-file-text ms-1" aria-hidden="true"></i> الـ Prompt الجاهز</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-light" type="button" onclick="togglePromptPreview('prompt1')">
+                                <i class="bi bi-eye ms-1" aria-hidden="true" id="prompt1ToggleIcon"></i>
+                                <span id="prompt1ToggleText">إظهار</span>
+                            </button>
+                            <button class="btn btn-sm btn-prompt-copy" type="button" onclick="copyPromptToClipboard('prompt1')">
+                                <i class="bi bi-clipboard ms-1" aria-hidden="true"></i> نسخ
+                            </button>
+                        </div>
+                    </div>
+                    <div class="prompt-output-body d-none" id="prompt1Preview">
+                        <pre class="prompt-output-text" id="prompt1Text"></pre>
+                    </div>
+                    <div class="prompt-copy-success d-none" id="prompt1CopySuccess">
+                        <i class="bi bi-check-circle-fill ms-1" aria-hidden="true"></i> تم النسخ بنجاح
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/sw-register.js"></script>
+    <script src="assets/js/utils.js"></script>
+    <script src="assets/js/db.js"></script>
+    <script src="assets/js/cities.js"></script>
+    <script src="assets/js/xlsx.full.min.js"></script>
+    <script src="assets/js/import.js"></script>
+</body>
+
+</html>
