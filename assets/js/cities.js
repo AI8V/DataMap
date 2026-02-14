@@ -372,3 +372,109 @@ function getCountryNameEn(countryCode) {
     const country = CITIES_DATABASE[countryCode];
     return country ? country.name_en : countryCode;
 }
+
+// ============================================
+// Reverse Geocoding via Nominatim (OSM)
+// ============================================
+
+/**
+ * طلب واحد لـ Nominatim reverse geocoding
+ * @param {number} lat
+ * @param {number} lon
+ * @returns {Promise<string|null>} اسم المدينة أو null
+ */
+async function reverseGeocodeCity(lat, lon) {
+    var url = 'https://nominatim.openstreetmap.org/reverse'
+        + '?lat=' + encodeURIComponent(lat)
+        + '&lon=' + encodeURIComponent(lon)
+        + '&format=json'
+        + '&accept-language=en'
+        + '&zoom=10'
+        + '&addressdetails=1';
+
+    try {
+        var response = await fetch(url, {
+            headers: {
+                'User-Agent': 'DataMapPro/2.1 (https://ai8v.com)'
+            }
+        });
+
+        if (!response.ok) return null;
+
+        var data = await response.json();
+
+        if (!data || !data.address) return null;
+
+        // ترتيب أولوية الحقول: city ثم town ثم city_district ثم county ثم state
+        var cityName = data.address.city
+            || data.address.town
+            || data.address.city_district
+            || data.address.county
+            || data.address.state
+            || null;
+
+        return cityName ? String(cityName).trim() : null;
+
+    } catch (e) {
+        console.warn('[ReverseGeocode] Failed for', lat, lon, e.message);
+        return null;
+    }
+}
+
+/**
+ * معالجة دفعة سجلات بـ reverse geocoding مع throttling 1 طلب/ثانية
+ * يُعدّل cityExtracted مباشرة في السجلات الممررة
+ *
+ * @param {Array} records — كل السجلات المعالجة
+ * @param {string} countryCode — كود الدولة للتطبيع
+ * @param {function} [onProgress] — callback(current, total)
+ * @returns {Promise<{resolved: number, failed: number, total: number}>}
+ */
+async function reverseGeocodeBatch(records, countryCode, onProgress) {
+    // جمع السجلات التي تحتاج geocoding
+    var pending = [];
+    for (var i = 0; i < records.length; i++) {
+        var r = records[i];
+        if (r.cityExtracted === 'غير محدد') {
+            var lat = parseFloat(r.Lat);
+            var lon = parseFloat(r.Long);
+            if (!isNaN(lat) && !isNaN(lon) && lat !== 0 && lon !== 0) {
+                pending.push({ index: i, lat: lat, lon: lon });
+            }
+        }
+    }
+
+    var result = { resolved: 0, failed: 0, total: pending.length };
+
+    if (pending.length === 0) return result;
+
+    for (var p = 0; p < pending.length; p++) {
+        var item = pending[p];
+
+        if (typeof onProgress === 'function') {
+            try { onProgress(p + 1, pending.length); } catch (_) {}
+        }
+
+        try {
+            var cityName = await reverseGeocodeCity(item.lat, item.lon);
+
+            if (cityName) {
+                // محاولة التطبيع مع قاعدة المدن المعروفة
+                var normalized = normalizeCityName(cityName, countryCode);
+                records[item.index].cityExtracted = normalized || cityName;
+                result.resolved++;
+            } else {
+                result.failed++;
+            }
+        } catch (e) {
+            result.failed++;
+        }
+
+        // throttling: انتظار 1.1 ثانية بين الطلبات (سياسة Nominatim: 1 طلب/ثانية)
+        if (p < pending.length - 1) {
+            await new Promise(function (resolve) { setTimeout(resolve, 1100); });
+        }
+    }
+
+    return result;
+}

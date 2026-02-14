@@ -741,6 +741,44 @@ async function processFile() {
             validation.warnings.forEach(w => showToast(w, 'warning'));
         }
 
+        // === Reverse Geocoding للسجلات "غير محدد" ===
+        var unknownCount = 0;
+        for (var ri = 0; ri < processedRecords.length; ri++) {
+            if (processedRecords[ri].cityExtracted === 'غير محدد') unknownCount++;
+        }
+
+        if (unknownCount > 0) {
+            // فحص الاتصال بالإنترنت
+            var isOnline = navigator.onLine !== false;
+            if (isOnline) {
+                showLoading(true, 'جاري تحديد المدن من الإحداثيات (' + unknownCount + ' سجل)...');
+
+                try {
+                    var geoResult = await reverseGeocodeBatch(
+                        processedRecords,
+                        countryCode,
+                        function (current, total) {
+                            updateProgress(current, total,
+                                'تحديد المدن: ' + current + ' من ' + total
+                            );
+                        }
+                    );
+
+                    if (geoResult.resolved > 0) {
+                        showToast(
+                            'تم تحديد ' + formatNumber(geoResult.resolved) + ' مدينة من الإحداثيات'
+                                + (geoResult.failed > 0 ? '، فشل ' + formatNumber(geoResult.failed) : ''),
+                            'success'
+                        );
+                    }
+                } catch (geoError) {
+                    console.warn('[ReverseGeocode] Batch error:', geoError);
+                    showToast('تعذّر تحديد بعض المدن من الإحداثيات — سيتم تصنيفها "غير محدد"', 'warning');
+                }
+            }
+        }
+        // === نهاية Reverse Geocoding ===
+
         showLoading(true, 'جاري كشف التكرارات...');
         const result = await DB.findDuplicates(processedRecords);
         uniqueRecords = result.unique;

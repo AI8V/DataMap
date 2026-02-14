@@ -1115,4 +1115,3 @@ async function confirmDelete() {
         showLoading(false);
     }
 }
-
