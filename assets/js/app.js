@@ -424,13 +424,6 @@ function renderTable(pageData) {
         tdReviews.textContent = formatNumber(record.Reviews || 0);
         tr.appendChild(tdReviews);
 
-        const tdKeyword = document.createElement('td');
-        const kwBadge = document.createElement('span');
-        kwBadge.className = 'badge-keyword';
-        kwBadge.textContent = record.keyword || '-';
-        tdKeyword.appendChild(kwBadge);
-        tr.appendChild(tdKeyword);
-
         const tdActions = document.createElement('td');
         const actionsDiv = document.createElement('div');
         actionsDiv.className = 'd-flex gap-1';
@@ -1122,3 +1115,4 @@ async function confirmDelete() {
         showLoading(false);
     }
 }
+
