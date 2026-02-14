@@ -397,6 +397,8 @@ let selectedCategories = {};
 let _categoryCounts = {};
 let duplicateAction = 'manual';
 let selectedDuplicates = new Set();
+let _importInProgress = false;
+let _pendingLeaveUrl = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
     await initDB();
@@ -427,6 +429,62 @@ document.addEventListener('visibilitychange', function () {
     if (document.visibilityState === 'visible' && _db) {
         loadImportHistory();
         updateNavCount();
+    }
+});
+
+window.addEventListener('beforeunload', function (e) {
+    if (!_importInProgress) return;
+    e.preventDefault();
+    e.returnValue = '';
+});
+
+document.addEventListener('click', function (e) {
+    if (!_importInProgress) return;
+
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+
+    var href = link.getAttribute('href');
+    if (!href) return;
+
+    if (href.startsWith('#') || href.startsWith('javascript:')) return;
+
+    if (link.target === '_blank') return;
+
+    var isInternal = href === 'index.html'
+        || href === 'analytics.html'
+        || href === 'export.html'
+        || href === 'import.html'
+        || href.endsWith('/index.html')
+        || href.endsWith('/analytics.html')
+        || href.endsWith('/export.html')
+        || href.endsWith('/import.html')
+        || href === '/'
+        || href === './';
+
+    if (!isInternal) return;
+
+    e.preventDefault();
+    _pendingLeaveUrl = href;
+
+    var modalEl = document.getElementById('leaveImportModal');
+    if (modalEl) {
+        new bootstrap.Modal(modalEl).show();
+    }
+}, true);
+
+document.addEventListener('DOMContentLoaded', function () {
+    var btnConfirmLeave = document.getElementById('btnConfirmLeave');
+    if (btnConfirmLeave) {
+        btnConfirmLeave.addEventListener('click', function () {
+            _importInProgress = false;
+            var modalEl = document.getElementById('leaveImportModal');
+            var modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+            if (_pendingLeaveUrl) {
+                window.location.href = _pendingLeaveUrl;
+            }
+        });
     }
 });
 
@@ -748,6 +806,8 @@ function showSummary(total, newCount, duplicateCount) {
     document.getElementById('summaryCategories').textContent = formatNumber(categories.size);
 
     document.getElementById('stepSummary').classList.remove('d-none');
+
+    _importInProgress = true;
 }
 
 function showDuplicates() {
@@ -1208,6 +1268,9 @@ function resetImport() {
     _categoryCounts = {};
     selectedDuplicates = new Set();
     duplicateAction = 'manual';
+
+    _importInProgress = false;
+    _pendingLeaveUrl = null;
 
     removeFile();
     document.getElementById('keywordInput').value = '';

@@ -657,6 +657,9 @@ const DB = {
             const cities = new Set();
             const categories = new Set();
             const keywords = new Set();
+            const cityCounts = {};
+            const categoryCounts = {};
+            const keywordCounts = {};
             let source;
 
             if (indexFilter) {
@@ -672,9 +675,18 @@ const DB = {
                     const r = cursor.value;
 
                     if (_matchesAllFilters(r, filters)) {
-                        if (r.cityExtracted) cities.add(r.cityExtracted);
-                        if (r.Category) categories.add(r.Category);
-                        if (r.keyword) keywords.add(r.keyword);
+                        if (r.cityExtracted) {
+                            cities.add(r.cityExtracted);
+                            cityCounts[r.cityExtracted] = (cityCounts[r.cityExtracted] || 0) + 1;
+                        }
+                        if (r.Category) {
+                            categories.add(r.Category);
+                            categoryCounts[r.Category] = (categoryCounts[r.Category] || 0) + 1;
+                        }
+                        if (r.keyword) {
+                            keywords.add(r.keyword);
+                            keywordCounts[r.keyword] = (keywordCounts[r.keyword] || 0) + 1;
+                        }
                     }
 
                     cursor.continue();
@@ -682,7 +694,10 @@ const DB = {
                     resolve({
                         cities: Array.from(cities).sort(),
                         categories: Array.from(categories).sort(),
-                        keywords: Array.from(keywords).sort()
+                        keywords: Array.from(keywords).sort(),
+                        cityCounts: cityCounts,
+                        categoryCounts: categoryCounts,
+                        keywordCounts: keywordCounts
                     });
                 }
             };

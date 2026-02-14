@@ -463,6 +463,24 @@
 .multi-select-option .option-count {
   color: var(--text-muted);
   font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-full);
+  min-width: 1.6rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.multi-select-option.selected .option-count {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--primary-light);
+}
+
+.multi-select-option .option-count {
+  color: var(--text-muted);
+  font-size: 0.75rem;
   flex-shrink: 0;
 }
 

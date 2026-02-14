@@ -158,6 +158,7 @@ async function populateFilters() {
     if (reviewsEl && reviewsEl.value) advancedFilters.reviewsRange = reviewsEl.value;
 
     var cityOptions, categoryOptions, keywordOptions;
+    var cityCounts, categoryCounts, keywordCounts;
 
     try {
         var cityFilters = Object.assign({}, advancedFilters);
@@ -165,24 +166,30 @@ async function populateFilters() {
         if (currentKeyword && currentKeyword.length > 0) cityFilters.keyword = currentKeyword;
         var cityResult = await DB.getFilteredOptions(cityFilters);
         cityOptions = cityResult.cities;
+        cityCounts = cityResult.cityCounts;
 
         var catFilters = Object.assign({}, advancedFilters);
         if (currentCity && currentCity.length > 0) catFilters.city = currentCity;
         if (currentKeyword && currentKeyword.length > 0) catFilters.keyword = currentKeyword;
         var catResult = await DB.getFilteredOptions(catFilters);
         categoryOptions = catResult.categories;
+        categoryCounts = catResult.categoryCounts;
 
         var kwFilters = Object.assign({}, advancedFilters);
         if (currentCity && currentCity.length > 0) kwFilters.city = currentCity;
         if (currentCategory && currentCategory.length > 0) kwFilters.category = currentCategory;
         var kwResult = await DB.getFilteredOptions(kwFilters);
         keywordOptions = kwResult.keywords;
+        keywordCounts = kwResult.keywordCounts;
     } catch (error) {
         console.error('Cascading filter error:', error);
         var stats = await DB.getStats();
         cityOptions = stats.cities;
         categoryOptions = stats.categories;
         keywordOptions = stats.keywords;
+        cityCounts = null;
+        categoryCounts = null;
+        keywordCounts = null;
     }
 
     if (currentCity) {
@@ -198,15 +205,15 @@ async function populateFilters() {
         if (currentKeyword.length === 0) currentKeyword = null;
     }
 
-    _buildMultiSelectOptions('city', cityOptions, currentCity, 'جميع المدن');
-    _buildMultiSelectOptions('category', categoryOptions, currentCategory, 'جميع التصنيفات');
-    _buildMultiSelectOptions('keyword', keywordOptions, currentKeyword, 'جميع الكلمات');
+    _buildMultiSelectOptions('city', cityOptions, currentCity, 'جميع المدن', cityCounts);
+    _buildMultiSelectOptions('category', categoryOptions, currentCategory, 'جميع التصنيفات', categoryCounts);
+    _buildMultiSelectOptions('keyword', keywordOptions, currentKeyword, 'جميع الكلمات', keywordCounts);
 }
 
-function _buildMultiSelectOptions(filterKey, options, selectedValues, defaultText) {
+function _buildMultiSelectOptions(filterKey, options, selectedValues, defaultText, counts) {
     MultiSelect.build(filterKey + 'FilterWrapper', options, selectedValues, defaultText, function () {
         _applyFilterChange();
-    });
+    }, counts || undefined);
 }
 
 let _filterGeneration = 0;

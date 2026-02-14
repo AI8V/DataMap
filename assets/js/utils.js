@@ -714,16 +714,7 @@ function validateBackupData(data) {
 
 const MultiSelect = {
 
-    /**
-     * Build multi-select dropdown options using DOM API.
-     *
-     * @param {string} wrapperId - Full ID of the .multi-select-wrapper element
-     * @param {Array} options - Array of option strings
-     * @param {Array|null} selectedValues - Currently selected values, or null for none
-     * @param {string} defaultText - Default toggle text when nothing selected
-     * @param {Function} onChange - Callback when selection changes: onChange(wrapperId)
-     */
-    build: function (wrapperId, options, selectedValues, defaultText, onChange) {
+    build: function (wrapperId, options, selectedValues, defaultText, onChange, counts) {
         var wrapper = document.getElementById(wrapperId);
         if (!wrapper) return;
 
@@ -753,6 +744,13 @@ const MultiSelect = {
 
             div.appendChild(checkbox);
             div.appendChild(label);
+
+            if (counts && counts[opt] !== undefined) {
+                var countSpan = document.createElement('span');
+                countSpan.className = 'option-count';
+                countSpan.textContent = formatNumber(counts[opt]);
+                div.appendChild(countSpan);
+            }
 
             div.addEventListener('click', function () {
                 MultiSelect.toggle(wrapperId, div, defaultText, onChange);
