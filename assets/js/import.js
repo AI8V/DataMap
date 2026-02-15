@@ -930,10 +930,17 @@ function renderDuplicatesTable() {
 
         tdMatch.appendChild(document.createElement('br'));
 
-        const matchSmall = document.createElement('small');
-        matchSmall.className = 'text-muted';
-        matchSmall.textContent = 'الكلمة: ' + (er.keyword || '-');
-        tdMatch.appendChild(matchSmall);
+        const matchName = document.createElement('small');
+        matchName.className = 'text-info';
+        matchName.textContent = er.Name || '-';
+        tdMatch.appendChild(matchName);
+
+        tdMatch.appendChild(document.createElement('br'));
+
+        const matchKeyword = document.createElement('small');
+        matchKeyword.className = 'text-muted';
+        matchKeyword.textContent = 'الكلمة: ' + (er.keyword || '-');
+        tdMatch.appendChild(matchKeyword);
 
         tr.appendChild(tdMatch);
 
@@ -1371,3 +1378,4 @@ async function loadImportHistory() {
         console.error('History load error:', error);
     }
 }
+
